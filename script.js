@@ -123,15 +123,27 @@ function renderPointBuy() {
 }
 async function exportJSON() {
     const jsonStr = JSON.stringify(character, null, 2);
-    if ('showSaveFilePicker' in window) {
+    if (window.isSecureContext && 'showSaveFilePicker' in window) {
         try {
-            const handle = await window.showSaveFilePicker({ suggestedName: 'character.json', types: [{ description: 'JSON', accept: {'application/json': ['.json']} }] });
-            const writable = await handle.createWritable(); await writable.write(jsonStr); await writable.close(); return;
-        } catch (e) { return; }
+            const handle = await window.showSaveFilePicker({
+                suggestedName: 'character.json',
+                types: [{ description: 'JSON File', accept: {'application/json': ['.json']} }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(jsonStr);
+            await writable.close();
+            return;
+        } catch (e) { console.log("Save cancelled or failed"); }
     }
+
+    // Fallback for Firefox/Safari or if the API fails
     const blob = new Blob([jsonStr], {type: "application/json"});
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'character.json'; a.click();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'character.json';
+    a.click();
+    URL.revokeObjectURL(url);
 }
 function importJSON(e) {
     const file = e.target.files[0]; if (!file) return;
