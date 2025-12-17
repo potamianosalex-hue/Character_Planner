@@ -146,10 +146,31 @@ async function exportJSON() {
     URL.revokeObjectURL(url);
 }
 function importJSON(e) {
-    const file = e.target.files[0]; if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
+
     const reader = new FileReader();
-    reader.onload = (ev) => { try { character = JSON.parse(ev.target.result); renderPointBuy(); updateUI(); } catch(err) { alert("Error."); } };
+    reader.onload = (ev) => {
+        try {
+            const importedChar = JSON.parse(ev.target.result);
+            
+            // Basic validation: make sure it's actually a character file
+            if (importedChar.attributes && importedChar.level) {
+                character = importedChar;
+                renderPointBuy(); // Refresh the controls
+                updateUI();       // Refresh the sheet
+                console.log("Character loaded successfully!");
+            } else {
+                alert("Invalid character file format.");
+            }
+        } catch (err) {
+            alert("Error reading file. Make sure it's a valid .json file.");
+        }
+    };
     reader.readAsText(file);
+    
+    // Clear the input value so the same file can be uploaded twice if needed
+    e.target.value = "";
 }
 function resetCharacter() { if(confirm("Reset?")) { character = JSON.parse(JSON.stringify(defaultState)); renderPointBuy(); updateUI(); } }
 
