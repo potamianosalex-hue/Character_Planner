@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D 2024 Character Creator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container" id="main-layout">
+        <nav class="sidebar">
+            <div class="main-nav">
+                <div class="accordion">
+                    <button class="accordion-header" onclick="toggleAccordion('level1-content')">
+                        <span class="header-label">Level 1 <span id="lvl1-alert" class="alert-dot" style="display:none;">!</span></span>
+                        <span id="accordion-arrow">▶</span>
+                    </button>
+                    <div id="level1-content" class="accordion-content" style="display:none;">
+                        <button id="nav-attributes" onclick="showSection('attributes')" class="sub-menu-btn">
+                            Attributes <span id="attr-alert" class="alert-dot" style="display:none;">!</span>
+                        </button>
+                        <button id="nav-race" onclick="showSection('race')" class="sub-menu-btn">
+                            Race <span id="race-alert" class="alert-dot" style="display:none;">!</span>
+                        </button>
+                        <button id="nav-background" onclick="showSection('background')" class="sub-menu-btn">
+                            Background <span id="bg-alert" class="alert-dot" style="display:none;">!</span>
+                        </button>
+                        <button id="nav-class" onclick="showSection('class')" class="sub-menu-btn">
+                            Class <span id="class-alert" class="alert-dot" style="display:none;">!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-actions">
+                <button onclick="resetCharacter()" class="btn-danger">New Character</button>
+                <button onclick="exportJSON()" class="btn-success">Save Character As...</button>
+                <input type="file" id="importFile" hidden onchange="importJSON(event)">
+                <button onclick="document.getElementById('importFile').click()" class="btn-info">Load Character</button>
+            </div>
+        </nav>
+
+        <main class="workspace" id="workspace-area">
+            <div id="attributes-ui" class="config-panel" style="display:none;">
+                <h3>Point Buy</h3>
+                <div class="points-banner">Points Remaining: <span id="points-left">27</span> / 27</div>
+                <div id="point-buy-controls" class="stat-controls-container"></div>
+            </div>
+            
+            <div id="race-ui" class="config-panel" style="display:none;">
+                <h3>Select Race</h3>
+                <div class="options-grid-vertical">
+                    <button class="choice-btn" id="btn-race-Dwarf" onclick="selectRace('Dwarf')">Dwarf</button>
+                    <button class="choice-btn" id="btn-race-Wood Elf" onclick="selectRace('Wood Elf')">Wood Elf</button>
+                </div>
+            </div>
+
+            <div id="background-ui" class="config-panel" style="display:none;">
+                <h3>Select Background</h3>
+                <div class="options-grid-vertical">
+                    <button class="choice-btn" id="btn-bg-Farmer" onclick="selectBackground('Farmer')">Farmer</button>
+                    <button class="choice-btn" id="btn-bg-Wayfarer" onclick="selectBackground('Wayfarer')">Wayfarer</button>
+                </div>
+            </div>
+
+            <div id="class-ui" class="config-panel" style="display:none;">
+                <h3>Select Class</h3>
+                <div class="options-grid-vertical">
+                    <button class="choice-btn" id="btn-class-Barbarian" onclick="selectClass('Barbarian')">Barbarian</button>
+                </div>
+            </div>
+        </main>
+
+        <aside class="character-sheet">
+            <div class="sheet-inner">
+                <div class="top-stats-row">
+                    <div class="stat-main hp-box"><small>❤️ HP</small><div id="max-hp">0</div></div>
+                    <div class="stat-main speed-box"><small>👣 SPEED</small><div id="speed-val">30</div><span class="unit">ft</span></div>
+                    <div class="stat-main ac-box"><small>🛡️ AC</small><div id="ac-val">10</div></div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box"><span>STR</span><div id="score-STR">8</div><small id="mod-STR">-1</small></div>
+                    <div class="stat-box"><span>DEX</span><div id="score-DEX">8</div><small id="mod-DEX">-1</small></div>
+                    <div class="stat-box"><span>CON</span><div id="score-CON">8</div><small id="mod-CON">-1</small></div>
+                    <div class="stat-box"><span>INT</span><div id="score-INT">8</div><small id="mod-INT">-1</small></div>
+                    <div class="stat-box"><span>WIS</span><div id="score-WIS">8</div><small id="mod-WIS">-1</small></div>
+                    <div class="stat-box"><span>CHA</span><div id="score-CHA">8</div><small id="mod-CHA">-1</small></div>
+                </div>
+
+                <div class="traits-container">
+                    <h3>Traits & Features</h3>
+                    <textarea id="traits-box" readonly placeholder="Features will appear here..."></textarea>
+                </div>
+            </div>
+        </aside>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
