@@ -29,7 +29,20 @@ const defaultState = { level: 1, attributes: { STR: 8, DEX: 8, CON: 8, INT: 8, W
 let character = JSON.parse(JSON.stringify(defaultState));
 const costTable = { 8:0, 9:1, 10:2, 11:3, 12:4, 13:5, 14:7, 15:9 };
 
-function init() { renderPointBuy(); updateUI(); }
+function init() {
+    // Check if there is a saved character in the browser memory
+    const saved = localStorage.getItem('dnd_char_backup');
+    if (saved) {
+        try {
+            character = JSON.parse(saved);
+        } catch (e) {
+            console.error("Failed to load local storage data.");
+        }
+    }
+
+    renderPointBuy();
+    updateUI();
+}
 
 function checkRequirements() {
     const pointsLeft = 27 - calculatePointsUsed();
@@ -101,6 +114,7 @@ function updateUI() {
     if(character.class) document.getElementById(`btn-class-${character.class}`)?.classList.add('active');
 
     checkRequirements();
+    saveToLocalStorage();
 }
 
 // Logic Utilities
@@ -146,32 +160,21 @@ async function exportJSON() {
     URL.revokeObjectURL(url);
 }
 function importJSON(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
-        try {
-            const importedChar = JSON.parse(ev.target.result);
-            
-            // Basic validation: make sure it's actually a character file
-            if (importedChar.attributes && importedChar.level) {
-                character = importedChar;
-                renderPointBuy(); // Refresh the controls
-                updateUI();       // Refresh the sheet
-                console.log("Character loaded successfully!");
-            } else {
-                alert("Invalid character file format.");
-            }
-        } catch (err) {
-            alert("Error reading file. Make sure it's a valid .json file.");
-        }
-    };
+    reader.onload = (ev) => { try { character = JSON.parse(ev.target.result); renderPointBuy(); updateUI(); } catch(err) { alert("Error."); } };
     reader.readAsText(file);
-    
-    // Clear the input value so the same file can be uploaded twice if needed
-    e.target.value = "";
 }
-function resetCharacter() { if(confirm("Reset?")) { character = JSON.parse(JSON.stringify(defaultState)); renderPointBuy(); updateUI(); } }
+function saveToLocalStorage() {
+    localStorage.setItem('dnd_char_backup', JSON.stringify(character));
+}
+function resetCharacter() {
+    if(confirm("Are you sure? This will wipe the current character.")) {
+        character = JSON.parse(JSON.stringify(defaultState));
+        localStorage.removeItem('dnd_char_backup'); // Clear the backup
+        renderPointBuy();
+        updateUI();
+    }
+}
 
 init();
